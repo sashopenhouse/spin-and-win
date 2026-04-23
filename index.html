@@ -632,11 +632,30 @@ footer{
       <div class="m-desc" id="mDesc"></div>
       <div class="m-code-lbl">Your Promo Code</div>
       <div class="m-code" id="mCode"></div>
-      <a href="https://newyorksash.com/contact" class="m-cta">Claim Prize → Request Free Quote</a>
+      <button class="m-cta" id="openQuoteFormBtn" type="button">Claim Prize → Request Free Quote</button>
       <button class="m-close" onclick="closeModal()">Close &amp; Keep Code</button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+
+    <!-- QUOTE FORM MODAL -->
+    <div class="overlay" id="quoteFormOverlay">
+      <div class="modal">
+        <div class="m-body">
+          <div class="m-eye">◆ Free Quote ◆</div>
+          <form id="quoteForm" style="display:flex;flex-direction:column;gap:16px;align-items:center;">
+            <input type="email" id="quoteEmail" name="email" placeholder="Your Email" required style="padding:13px 14px;font-size:15px;width:100%;max-width:320px;border-radius:6px;border:1.5px solid #ccc;outline:none;box-sizing:border-box;">
+            <input type="text" id="quoteCoupon" name="coupon" placeholder="Coupon Code" required readonly style="padding:13px 14px;font-size:15px;width:100%;max-width:320px;border-radius:6px;border:1.5px solid #ccc;outline:none;box-sizing:border-box;background:#f7f7f7;">
+            <input type="text" id="quoteName" name="name" placeholder="Your Name" required style="padding:13px 14px;font-size:15px;width:100%;max-width:320px;border-radius:6px;border:1.5px solid #ccc;outline:none;box-sizing:border-box;">
+            <input type="tel" id="quotePhone" name="phone" placeholder="Phone (optional)" style="padding:13px 14px;font-size:15px;width:100%;max-width:320px;border-radius:6px;border:1.5px solid #ccc;outline:none;box-sizing:border-box;">
+            <textarea id="quoteMsg" name="message" placeholder="Project Details (optional)" rows="3" style="padding:13px 14px;font-size:15px;width:100%;max-width:320px;border-radius:6px;border:1.5px solid #ccc;outline:none;box-sizing:border-box;"></textarea>
+            <button type="submit" class="m-cta" style="margin-top:8px;width:100%;max-width:320px;">Submit Quote Request</button>
+            <button type="button" class="m-close" id="closeQuoteFormBtn">Cancel</button>
+          </form>
+          <div id="quoteFormSuccess" style="display:none;color:#0a0;font-weight:700;margin-top:10px;">Thank you! We'll contact you soon.</div>
+        </div>
+      </div>
+    </div>
 
 <script>
 // --- Email Required to Spin ---
@@ -823,7 +842,41 @@ function showResult(p){
   document.getElementById('mDesc').textContent=p.d;
   document.getElementById('mCode').textContent=p.code;
   document.getElementById('overlay').classList.add('show');
+  // Store coupon code for quote form
+  window._lastCouponCode = p.code;
   pop();
+// --- Quote Form Modal Logic ---
+function openQuoteFormModal() {
+  const qOverlay = document.getElementById('quoteFormOverlay');
+  const email = localStorage.getItem('spinEmail') || '';
+  const coupon = window._lastCouponCode || '';
+  document.getElementById('quoteEmail').value = email;
+  document.getElementById('quoteCoupon').value = coupon;
+  qOverlay.classList.add('show');
+}
+function closeQuoteFormModal() {
+  document.getElementById('quoteFormOverlay').classList.remove('show');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const openBtn = document.getElementById('openQuoteFormBtn');
+  if(openBtn) openBtn.onclick = openQuoteFormModal;
+  const closeBtn = document.getElementById('closeQuoteFormBtn');
+  if(closeBtn) closeBtn.onclick = closeQuoteFormModal;
+  // Overlay click to close
+  document.getElementById('quoteFormOverlay').addEventListener('click',e=>{if(e.target.id==='quoteFormOverlay')closeQuoteFormModal();});
+  // Handle form submit (demo: just show thank you)
+  document.getElementById('quoteForm').onsubmit = function(e){
+    e.preventDefault();
+    document.getElementById('quoteForm').style.display='none';
+    document.getElementById('quoteFormSuccess').style.display='block';
+    setTimeout(()=>{
+      closeQuoteFormModal();
+      document.getElementById('quoteForm').reset();
+      document.getElementById('quoteForm').style.display='flex';
+      document.getElementById('quoteFormSuccess').style.display='none';
+    }, 2200);
+  };
+});
 }
 function closeModal(){document.getElementById('overlay').classList.remove('show');}
 document.getElementById('overlay').addEventListener('click',e=>{if(e.target.id==='overlay')closeModal();});
