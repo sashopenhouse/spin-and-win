@@ -753,9 +753,12 @@ function doSpin(){
     else{
       busy=false;
       prizes.forEach((_,i)=>document.getElementById('c'+i).classList.remove('lit'));
-      document.getElementById('c'+winner).classList.add('lit');
+      // Calculate the actual landed segment
+      const na=(((-cur-Math.PI/2)%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
+      const landedIdx=Math.floor(na/ARC)%N;
+      document.getElementById('c'+landedIdx).classList.add('lit');
       btn.disabled=false;btn.textContent='Spin Again';
-      setTimeout(()=>showResult(prizes[winner]),320);
+      setTimeout(()=>showResult(prizes[landedIdx]),320);
     }
   }
   requestAnimationFrame(tick);
